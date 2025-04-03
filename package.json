@@ -1,0 +1,33 @@
+{
+  "name": "infra-controller",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc",
+    "test-mailwizz": "npm run build && node dist/services/mailwizz_tester/MailwizzTester.js",
+    "test-mailwizz-dev": "ts-node src/services/mailwizz_tester/MailwizzTester.ts",
+    "format": "prettier --write \"src/**/*.{ts,js}\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/mailparser": "^3.4.5",
+    "axios": "^1.8.3",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "mailparser": "^3.7.2",
+    "mysql2": "^3.12.0",
+    "node-pop3": "^0.9.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.24",
+    "prettier": "3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}

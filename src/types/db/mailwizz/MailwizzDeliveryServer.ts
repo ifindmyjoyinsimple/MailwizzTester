@@ -1,0 +1,38 @@
+export interface MailwizzDeliveryServer {
+  server_id: number;
+  customer_id?: number;
+  bounce_server_id?: number;
+  tracking_domain_id?: number;
+  warmup_plan_id?: number;
+  type: 'smtp';
+  name?: string;
+  hostname: string;
+  username: string;
+  password?: string;
+  port?: number;
+  protocol?: string;
+  timeout?: number;
+  from_email: string;
+  from_name?: string;
+  reply_to_email?: string;
+  probability?: number;
+  second_quota?: number;
+  minute_quota?: number;
+  hourly_quota?: number;
+  daily_quota?: number;
+  monthly_quota?: number;
+  pause_after_send?: number;
+  meta_data?: string;
+  confirmation_key?: string;
+  locked?: 'yes' | 'no';
+  use_for?: number;
+  signing_enabled: 'yes' | 'no';
+  force_from?: string;
+  force_from_name?: string;
+  force_reply_to?: string;
+  force_sender?: 'yes' | 'no';
+  must_confirm_delivery?: 'yes' | 'no';
+  status: 'active' | 'inactive';
+  date_added: Date;
+  last_updated: Date;
+}

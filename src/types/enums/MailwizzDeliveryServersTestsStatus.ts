@@ -1,0 +1,5 @@
+export enum MailwizzDeliveryServersTestsStatus {
+    PENDING = 'MAILWIZZ_TEST_PENDING',
+    SUCCESSFUL = 'MAILWIZZ_TEST_SUCCESSFUL',
+    FAILED = 'MAILWIZZ_TEST_FAILED',
+}
