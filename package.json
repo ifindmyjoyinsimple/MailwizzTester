@@ -6,7 +6,10 @@
     "build": "tsc",
     "test-mailwizz": "npm run build && node dist/services/mailwizz_tester/MailwizzTester.js",
     "test-mailwizz-dev": "ts-node src/services/mailwizz_tester/MailwizzTester.ts",
-    "format": "prettier --write \"src/**/*.{ts,js}\""
+    "format": "prettier --write \"src/**/*.{ts,js}\"",
+    "dev": "serverless offline",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove"
   },
   "keywords": [],
   "author": "",
@@ -25,8 +28,14 @@
     "pino-pretty": "^13.0.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.148",
     "@types/node": "^20.17.24",
+    "esbuild": "^0.25.2",
     "prettier": "3.5.3",
+    "serverless": "^4.10.1",
+    "serverless-esbuild": "^1.55.0",
+    "serverless-offline": "^14.4.0",
+    "serverless-typescript": "^0.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   }

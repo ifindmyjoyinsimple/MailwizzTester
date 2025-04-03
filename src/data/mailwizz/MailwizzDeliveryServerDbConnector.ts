@@ -30,6 +30,7 @@ export class MailwizzDeliveryServerDbConnector {
       SELECT * FROM mailwizz.mw_delivery_server 
       WHERE server_id = ?
     `;
+    console.log('Getting delivery server by id:', id);
     const result = await this.dbConnector.query<MailwizzDeliveryServer>(query, [id]);
     return result.rows[0] as MailwizzDeliveryServer | null;
   }

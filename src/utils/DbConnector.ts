@@ -9,8 +9,8 @@ dotenv.config();
  */
 export class DbConnector {
   private static _instance: DbConnector;
-  private connection: mysql.Connection | null = null;
-  private connectionConfig: mysql.ConnectionOptions;
+  private pool: mysql.Pool | null = null;
+  private connectionConfig: mysql.PoolOptions;
 
   /**
    * Private constructor to enforce singleton pattern
@@ -30,8 +30,11 @@ export class DbConnector {
       password: config?.password || process.env.DB_PASSWORD,
       database: config?.database || process.env.DB_NAME,
       port: config?.port || parseInt(process.env.DB_PORT || '3306'),
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
     };
-    
+
     console.log('Database connector initialized');
   }
 
@@ -46,7 +49,6 @@ export class DbConnector {
     return DbConnector._instance;
   }
 
-  
   /**
    * Execute a query asynchronously
    * This method returns a promise that resolves when the query completes
@@ -56,8 +58,8 @@ export class DbConnector {
    */
   public async query<T>(sql: string, params?: any[]): Promise<{ rows: T[] }> {
     try {
-      const connection = await this.ensureConnection();
-      const [rows] = await connection.query(sql, params || []);
+      const pool = await this.ensurePool();
+      const [rows] = await pool.query(sql, params || []);
       return { rows: rows as T[] };
     } catch (error) {
       console.error('Database query error:', error);
@@ -93,28 +95,26 @@ export class DbConnector {
    */
   public async close(): Promise<void> {
     try {
-      if (this.connection) {
-        await this.connection.end();
-        console.log('Database connection closed');
-        this.connection = null;
+      if (this.pool) {
+        await this.pool.end();
+        console.log('Database connection pool closed');
+        this.pool = null;
       }
     } catch (error) {
-      console.error('Error closing database connection:', error);
+      console.error('Error closing database connection pool:', error);
       throw error;
     }
   }
 
   /**
-   * Ensures a connection exists before executing a query
-   * Creates a new connection if one doesn't exist or is closed
+   * Ensures a connection pool exists before executing a query
+   * Creates a new pool if one doesn't exist
    */
-  private async ensureConnection(): Promise<mysql.Connection> {
-    // Create a connection if it doesn't exist
-    if (!this.connection) {
-      this.connection = await mysql.createConnection(this.connectionConfig);
-      console.log('Database connection established');
+  private async ensurePool(): Promise<mysql.Pool> {
+    if (!this.pool) {
+      this.pool = mysql.createPool(this.connectionConfig);
+      console.log('Database connection pool established');
     }
-    return this.connection;
+    return this.pool;
   }
-
 }

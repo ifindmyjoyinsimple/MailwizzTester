@@ -1,0 +1,82 @@
+service: mailwizz-tester
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  timeout: 899
+  logRetentionInDays: 3
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedMethods:
+        - "*"
+      allowedHeaders:
+        - "*"
+      maxAge: 31536000
+  environment:
+    STAGE: ${self:provider.stage}
+
+    DB_HOST: 128.199.47.7 # Prod HOST
+    DB_PORT: 3306 # Prod PORT
+    DB_USER: mailwizz # Prod USER
+    DB_PASSWORD: mhDLsLP2SBiAS2^*Z0J@KFBsiYJqhF # Prod PASSWORD
+    DB_NAME: infra_controller # Prod DATABASE
+
+    DEV_DB_HOST: 128.199.47.7
+    DEV_DB_PORT: 3306
+    DEV_DB_USER: mailwizz
+    DEV_DB_PASSWORD: mhDLsLP2SBiAS2^*Z0J@KFBsiYJqhF
+    DEV_DB_NAME: infra_controller
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DeleteNetworkInterface
+        - ec2:AssignPrivateIpAddresses
+        - ec2:UnassignPrivateIpAddresses
+      Resource: "*"
+  vpc:
+    securityGroupIds:
+      - sg-0ae9500915de82c94
+    subnetIds:
+      - subnet-00a94f588b9dfba6a
+      - subnet-0e83abcf54bd51378
+
+package:
+  individually: true
+  patterns:
+    - "!node_modules/**"
+    - "node_modules/mysql2/**"
+    - "node_modules/dotenv/**"
+
+functions:
+  test-delivery-server:
+    handler: src/lambda/TestDeliveryServer.handler
+    events:
+      - httpApi:
+          method: get
+          path: /test-delivery-server
+    vpc: ${self:provider.vpc}
+
+plugins:
+  - serverless-offline
+
+# Built-in esbuild configuration
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: 'node20'
+    platform: 'node'
+    format: 'cjs'
+    mainFields: ['main', 'module']
+    external:
+      - 'mysql2'
+      - 'dotenv'
+    define:
+      'process.env.NODE_ENV': '"production"'
