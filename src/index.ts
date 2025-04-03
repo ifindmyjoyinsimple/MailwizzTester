@@ -1,6 +1,6 @@
-import { TestDeliveryServer } from "./lambda/TestDeliveryServer";
+import { MailwizzTesterController } from './controllers/MailwizzTesterController';
 
 (async () => {
-    const testDeliveryServer = new TestDeliveryServer();
-    await testDeliveryServer.handleTestDeliveryServer(7);
+  const testDeliveryServer = new MailwizzTesterController();
+  await testDeliveryServer.handleTestDeliveryServer(7);
 })();
