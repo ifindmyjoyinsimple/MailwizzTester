@@ -10,25 +10,25 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - "*"
+        - '*'
       allowedMethods:
-        - "*"
+        - '*'
       allowedHeaders:
-        - "*"
+        - '*'
       maxAge: 31536000
   environment:
     STAGE: ${self:provider.stage}
 
-    DB_HOST: 128.199.47.7 # Prod HOST
+    DB_HOST: 116.203.113.107 # Prod HOST
     DB_PORT: 3306 # Prod PORT
     DB_USER: mailwizz # Prod USER
-    DB_PASSWORD: mhDLsLP2SBiAS2^*Z0J@KFBsiYJqhF # Prod PASSWORD
+    DB_PASSWORD: w0KMgJnB&VcTLzl6pQ2%@3zK9rQx # Prod PASSWORD
     DB_NAME: infra_controller # Prod DATABASE
 
-    DEV_DB_HOST: 128.199.47.7
+    DEV_DB_HOST: 116.203.113.107
     DEV_DB_PORT: 3306
     DEV_DB_USER: mailwizz
-    DEV_DB_PASSWORD: mhDLsLP2SBiAS2^*Z0J@KFBsiYJqhF
+    DEV_DB_PASSWORD: w0KMgJnB&VcTLzl6pQ2%@3zK9rQx
     DEV_DB_NAME: infra_controller
   iamRoleStatements:
     - Effect: Allow
@@ -38,7 +38,7 @@ provider:
         - ec2:DeleteNetworkInterface
         - ec2:AssignPrivateIpAddresses
         - ec2:UnassignPrivateIpAddresses
-      Resource: "*"
+      Resource: '*'
   vpc:
     securityGroupIds:
       - sg-0ae9500915de82c94
@@ -49,9 +49,9 @@ provider:
 package:
   individually: true
   patterns:
-    - "!node_modules/**"
-    - "node_modules/mysql2/**"
-    - "node_modules/dotenv/**"
+    - '!node_modules/**'
+    - 'node_modules/mysql2/**'
+    - 'node_modules/dotenv/**'
 
 functions:
   test-delivery-server:

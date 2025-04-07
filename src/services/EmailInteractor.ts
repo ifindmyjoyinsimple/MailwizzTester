@@ -31,7 +31,7 @@ export interface EmailInteractionResult {
  * 1. Opening emails (via tracking pixel)
  * 2. Clicking links in emails
  * 3. Unsubscribe actions
- * 
+ *
  * The class follows a logical flow:
  * - Extract necessary links from email content using EmailLinkExtractor
  * - Simulate user interactions with these links
@@ -53,14 +53,12 @@ export class EmailInteractor {
   /**
    * Main entry point for simulating email interactions.
    * Orchestrates the entire interaction process including opens, clicks, and unsubscribes.
-   * 
+   *
    * @param email The email to use for interactions
    * @returns The interaction result if successful
    * @throws Error if the interaction simulation fails
    */
-  public async startEmailInteractions(
-    email: ParsedEmail
-  ): Promise<void> {
+  public async startEmailInteractions(email: ParsedEmail): Promise<void> {
     this.logger.info('Starting email interaction simulation');
 
     const interactionResult = await this.simulateEmailInteractions(email);
@@ -92,9 +90,9 @@ export class EmailInteractor {
    * 1. Simulates email open via tracking pixel
    * 2. Simulates clicking a content link
    * 3. Simulates unsubscribe action
-   * 
+   *
    * Success is determined by having at least 2 successful interactions.
-   * 
+   *
    * @param email The parsed email to interact with
    * @returns The result of all email interactions
    */
@@ -127,7 +125,7 @@ export class EmailInteractor {
         result.unsubscribeSuccess,
       ].filter(success => success).length;
 
-      result.success = successCount >= 2;
+      result.success = successCount >= 2; //TODO: what is that?
 
       this.logger.info(`Email interaction simulation ${result.success ? 'successful' : 'failed'}`);
       return result;
@@ -151,7 +149,10 @@ export class EmailInteractor {
   /**
    * Handles the email open interaction by finding and clicking the tracking pixel
    */
-  private async handleEmailOpenAndUpdateResult(emailContent: string, result: EmailInteractionResult): Promise<void> {
+  private async handleEmailOpenAndUpdateResult(
+    emailContent: string,
+    result: EmailInteractionResult
+  ): Promise<void> {
     const trackingPixelUrl = this.linkExtractor.extractTrackingPixelUrl(emailContent);
 
     if (trackingPixelUrl) {
@@ -173,12 +174,17 @@ export class EmailInteractor {
   /**
    * Handles clicking a content link in the email
    */
-  private async handleLinkClickAndUpdateResult(emailContent: string, result: EmailInteractionResult): Promise<void> {
+  private async handleLinkClickAndUpdateResult(
+    emailContent: string,
+    result: EmailInteractionResult
+  ): Promise<void> {
     const contentLinks = this.linkExtractor.extractContentLinks(emailContent);
 
     if (contentLinks.length > 0) {
       const linkToClick = contentLinks[0];
-      this.logger.info(`Found ${contentLinks.length} content links, simulating click on first link`);
+      this.logger.info(
+        `Found ${contentLinks.length} content links, simulating click on first link`
+      );
       result.interactedLinks.clickedUrl = linkToClick;
 
       const clickResult = await this.sendInteractionRequest(linkToClick, 'click');
@@ -196,7 +202,10 @@ export class EmailInteractor {
   /**
    * Handles the unsubscribe interaction
    */
-  private async handleUnsubscribeAndUpdateResult(emailContent: string, result: EmailInteractionResult): Promise<void> {
+  private async handleUnsubscribeAndUpdateResult(
+    emailContent: string,
+    result: EmailInteractionResult
+  ): Promise<void> {
     const unsubscribeLink = this.linkExtractor.extractUnsubscribeLink(emailContent);
 
     if (unsubscribeLink) {
