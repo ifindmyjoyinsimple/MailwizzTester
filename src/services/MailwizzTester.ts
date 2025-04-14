@@ -9,6 +9,8 @@ import { MailwizzDeliveryServer } from '../types/db/mailwizz/MailwizzDeliverySer
 import { MailwizzDeliveryServerDbConnector } from '../data/mailwizz/MailwizzDeliveryServerDbConnector';
 import { MailwizzDeliveryServersTestsDbConnector } from '../data/MailwizzDeliveryServersTestsDbConnector';
 import { MailwizzDeliveryServersTestsStatus } from '../types/enums/MailwizzDeliveryServersTestsStatus';
+import { MailwizzDeliveryServerToCustomerGroupDbConnector } from '../data/mailwizz/MailwizzDeliveryServerToCustomerGroupDbConnector';
+import { MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID } from '../types/constants/GlobalConstants';
 
 /**
  * MailwizzTester - Orchestrates email delivery testing
@@ -22,6 +24,7 @@ export class MailwizzTester {
   private logger: Logger;
   private mailwizzDeliveryServerDbConnector: MailwizzDeliveryServerDbConnector;
   private mailwizzDeliveryServersTestsDbConnector: MailwizzDeliveryServersTestsDbConnector;
+  private mailwizzDeliveryServerToCustomerGroupDbConnector: MailwizzDeliveryServerToCustomerGroupDbConnector;
   /**
    * Initializes the MailwizzTester
    */
@@ -29,6 +32,7 @@ export class MailwizzTester {
     this.logger = Logger.instance;
     this.mailwizzDeliveryServerDbConnector = MailwizzDeliveryServerDbConnector.instance;
     this.mailwizzDeliveryServersTestsDbConnector = MailwizzDeliveryServersTestsDbConnector.instance;
+    this.mailwizzDeliveryServerToCustomerGroupDbConnector = MailwizzDeliveryServerToCustomerGroupDbConnector.instance;
   }
 
 
@@ -67,6 +71,13 @@ export class MailwizzTester {
 
       // Step 7: Update the delivery server test status to successful
       await this.mailwizzDeliveryServersTestsDbConnector.upsert(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.SUCCESSFUL);
+
+      // Step 8: Add delivery server to the default customer group
+      this.logger.info(`Attempting to add server ${mailwizzDeliveryServerId} to group ${MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID}`);
+      await this.mailwizzDeliveryServerToCustomerGroupDbConnector.addDeliveryServerToCustomerGroup(
+        mailwizzDeliveryServerId,
+        MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID
+      );
 
       this.logger.info(`Test for Delivery Server ${mailwizzDeliveryServer!.server_id} completed successfully`);
     } catch (error) {
