@@ -1,6 +1,6 @@
 export const TRACKING_SUBDOMAIN = 't';
-export const DEFAULT_MAIL_PASSWORD = '9y%DjI%#3BKvVn';
-export const DEFAULT_MAIL_PASSWORD_MAILWIZZ_ENCRYPTED = 'mhLOuVHx7qbqAhpfUQyopg==';
+export const DEFAULT_MAIL_PASSWORD = 'RpKU7DfmrdkKXRsgbIe0U2wp';
+export const DEFAULT_MAIL_PASSWORD_MAILWIZZ_ENCRYPTED = 'Y46QmScuzEIa8cPlXn6t5oec/InPsJCvudXNHxfEK78=';
 export const SERVER_TESTER_CRON_IDENTIFIER = 'Server health testing';
 export const MAILWIZZ_TEST_RECIPIENT_EMAIL = 'info@zbhuey.online';
 export const MAILWIZZ_TEST_CUSTOMER_ACCOUNT_ID = 1;
