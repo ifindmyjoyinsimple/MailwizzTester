@@ -54,14 +54,14 @@ export class EmailRetriever {
    * Makes multiple attempts to retrieve the email, waiting between attempts
    *
    * @param campaignSubjectUuid The campaign UUID to look for in email subject lines
-   * @param maxAttempts Maximum number of retrieval attempts (default: 3)
+   * @param maxAttempts Maximum number of retrieval attempts (default: 20)
    * @param timeBetweenAttemptsMs Time to wait between attempts in ms (default: 60000 - 1 minute)
    * @returns The retrieved email result
    * @throws Error if email retrieval fails after all attempts
    */
   public async retrieveEmailWithRetries(
     campaignSubjectUuid: string,
-    maxAttempts: number = 6,
+    maxAttempts: number = 20,
     timeBetweenAttemptsMs: number = 60000
   ): Promise<ParsedEmail> {
     this.logger.info(`Starting email retrieval for campaign UUID: ${campaignSubjectUuid}`);
