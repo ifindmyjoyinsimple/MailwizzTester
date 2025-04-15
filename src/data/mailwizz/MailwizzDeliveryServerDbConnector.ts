@@ -35,6 +35,30 @@ export class MailwizzDeliveryServerDbConnector {
     return result.rows[0] as MailwizzDeliveryServer | null;
   }
 
+  public async getDeliveryServersByStatus(status: string): Promise<MailwizzDeliveryServer[]> {
+    const query = `
+      SELECT * FROM mailwizz.mw_delivery_server
+      WHERE status = ?
+    `;
+    const result = await this.dbConnector.query<MailwizzDeliveryServer>(query, [status]);
+    return result.rows as MailwizzDeliveryServer[];
+  }
+
+  public async updateDeliveryServerStatus(serverId: number, status: string): Promise<void> {
+    const query = `
+      UPDATE mailwizz.mw_delivery_server
+      SET status = ?, last_updated = NOW()
+      WHERE server_id = ?
+    `;
+    try {
+      await this.dbConnector.query(query, [status, serverId]);
+    } catch (error) {
+      console.error(`Error updating status for server ${serverId}:`, error);
+      // Re-throw or handle as appropriate for the application's error strategy
+      throw error;
+    }
+  }
+
   /**
    * Adds a new delivery server to the Mailwizz database
    * @param deliveryServer The delivery server to add

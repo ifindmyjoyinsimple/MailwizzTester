@@ -84,4 +84,37 @@ export class MailwizzDeliveryServersTestsDbConnector {
             throw error;
         }
     }
-} 
+
+    /**
+     * Retrieves the latest test record for a specific delivery server ID.
+     * @param serverId The ID of the delivery server.
+     * @returns The latest test record or null if none found.
+     */
+    public async getLatestTestForServer(serverId: number): Promise<MailwizzDeliveryServersTests | null> {
+        try {
+            const query = `
+                SELECT
+                    mailwizz_delivery_servers_test_id,
+                    delivery_server_id,
+                    status,
+                    error_message,
+                    test_insert_date
+                FROM mailwizz_delivery_servers_tests
+                WHERE delivery_server_id = ?
+                ORDER BY test_insert_date DESC
+                LIMIT 1
+            `;
+
+            const result = await this.dbConnector.query<MailwizzDeliveryServersTests>(query, [serverId]);
+
+            if (result.rows.length === 0) {
+                return null;
+            }
+
+            return result.rows[0] as MailwizzDeliveryServersTests;
+        } catch (error) {
+            this.logger.error(`Failed to get latest test for server ID ${serverId}:`, error);
+            throw error;
+        }
+    }
+}
