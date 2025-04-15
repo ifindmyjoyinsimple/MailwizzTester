@@ -7,9 +7,7 @@
     "test-mailwizz": "npm run build && node dist/services/mailwizz_tester/MailwizzTester.js",
     "test-mailwizz-dev": "ts-node src/services/mailwizz_tester/MailwizzTester.ts",
     "format": "prettier --write \"src/**/*.{ts,js}\"",
-    "dev": "serverless offline",
-    "deploy": "serverless deploy",
-    "remove": "serverless remove"
+    "test-mw-delivery-servers": "npm run build && node dist/auto-runner-entry.js"
   },
   "keywords": [],
   "author": "",
