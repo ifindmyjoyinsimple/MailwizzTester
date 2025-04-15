@@ -35,12 +35,18 @@ export class MailwizzDeliveryServerDbConnector {
     return result.rows[0] as MailwizzDeliveryServer | null;
   }
 
-  public async getDeliveryServersByStatus(status: string): Promise<MailwizzDeliveryServer[]> {
+  /**
+   * Retrieves active delivery servers that have been updated within the last hour.
+   * Uses database functions for time calculation.
+   * @returns An array of MailwizzDeliveryServer objects.
+   */
+  public async getActiveServersUpdatedInLastHour(): Promise<MailwizzDeliveryServer[]> {
+    // Assuming MySQL syntax for interval calculation. Adjust if using a different DB.
     const query = `
       SELECT * FROM mailwizz.mw_delivery_server
-      WHERE status = ?
+      WHERE status = 'active' AND last_updated > (NOW() - INTERVAL 1 HOUR)
     `;
-    const result = await this.dbConnector.query<MailwizzDeliveryServer>(query, [status]);
+    const result = await this.dbConnector.query<MailwizzDeliveryServer>(query);
     return result.rows as MailwizzDeliveryServer[];
   }
 
