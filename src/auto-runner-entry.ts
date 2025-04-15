@@ -1,6 +1,9 @@
 import { AutoRunnerService } from './services/AutoRunnerService';
 import { Logger } from './utils/Logger';
 import { DbConnector } from './utils/DbConnector'; // Import DbConnector if explicit shutdown is needed
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * Entry point for the automated Mailwizz delivery server testing process.
@@ -25,11 +28,8 @@ async function run() {
         // where exit codes matter (like a simple cron job).
         process.exitCode = 1;
     } finally {
-        // Optional: Gracefully close database connections if necessary
-        // This depends on whether DbConnector manages connections that need explicit closing.
-        // If DbConnector uses a pool that stays open, this might not be required.
-        // await DbConnector.instance.closeConnections(); // Example if closeConnections exists
         logger.info('Auto Runner Entry Point execution complete.');
+        await DbConnector.instance.close();
     }
 }
 
