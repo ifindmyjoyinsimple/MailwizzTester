@@ -54,7 +54,7 @@ export class MailwizzCampaignDbConnector {
     fromEmail: string
   ): Promise<number> {
     // Execute the stored procedure to create a campaign in the marketing_automation database
-    const query = 'CALL marketing_automation.campaign_create_new(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const query = 'CALL marketing_automation.campaign_create_new(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
     // Based on the stored procedure definition, we need to pass all required parameters
     const params = [
@@ -68,6 +68,7 @@ export class MailwizzCampaignDbConnector {
       deliveryServerId, // p_delivery_server_id
       emailSubject, // p_email_subject with UUID for tracking
       'Test pre-header', // p_pre_header
+      null // p_status
     ];
 
     // Execute the query and parse the result

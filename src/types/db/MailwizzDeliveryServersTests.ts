@@ -6,5 +6,4 @@ export interface MailwizzDeliveryServersTests {
     test_insert_date: Date;
     status: MailwizzDeliveryServersTestsStatus;
     error_message?: string;
-    date_last_tested?: Date;
 }

@@ -69,8 +69,8 @@ export class MailwizzTester {
       // Step 6: Check email headers for proper configuration
       await new EmailHeaderTester().testEmailHeaders(emailResult, mailwizzDeliveryServer!);
 
-      // Step 7: Update the delivery server test status to successful
-      await this.mailwizzDeliveryServersTestsDbConnector.upsert(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.SUCCESSFUL);
+      // Step 7: Create a record for the successful delivery server test
+      await this.mailwizzDeliveryServersTestsDbConnector.create(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.SUCCESSFUL);
 
       // Step 8: Add delivery server to the default customer group
       this.logger.info(`Attempting to add server ${mailwizzDeliveryServerId} to group ${MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID}`);
@@ -83,7 +83,8 @@ export class MailwizzTester {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Error running test for Delivery Server ${mailwizzDeliveryServerId}: ${errorMessage}`);
-      await this.mailwizzDeliveryServersTestsDbConnector.upsert(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.FAILED, errorMessage);
+      // Create a record for the failed delivery server test
+      await this.mailwizzDeliveryServersTestsDbConnector.create(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.FAILED, errorMessage);
       throw error;
     }
   }

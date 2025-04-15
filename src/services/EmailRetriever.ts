@@ -61,7 +61,7 @@ export class EmailRetriever {
    */
   public async retrieveEmailWithRetries(
     campaignSubjectUuid: string,
-    maxAttempts: number = 3,
+    maxAttempts: number = 6,
     timeBetweenAttemptsMs: number = 60000
   ): Promise<ParsedEmail> {
     this.logger.info(`Starting email retrieval for campaign UUID: ${campaignSubjectUuid}`);
