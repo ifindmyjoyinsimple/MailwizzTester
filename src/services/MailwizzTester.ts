@@ -1,6 +1,6 @@
 import { Logger } from '../utils/Logger';
 import { CampaignCreator } from './CampaignCreator';
-import { EmailRetriever } from './EmailRetriever';
+import { EmailRetriever, ParsedEmail } from './EmailRetriever';
 import { EmailInteractor } from './EmailInteractor';
 import { EmailHeaderTester } from './EmailHeaderTester';
 import { EmailInteractionValidator } from './EmailInteractionValidator';
@@ -11,7 +11,8 @@ import { MailwizzDeliveryServersTestsDbConnector } from '../data/MailwizzDeliver
 import { MailwizzDeliveryServersTestsStatus } from '../types/enums/MailwizzDeliveryServersTestsStatus';
 import { MailwizzDeliveryServerToCustomerGroupDbConnector } from '../data/mailwizz/MailwizzDeliveryServerToCustomerGroupDbConnector';
 import { MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID } from '../types/constants/GlobalConstants';
-
+import { MailboxEmailLinksClickerEmailsDbConnector } from '../data/MailboxEmailLinksClickerEmailsDbConnector';
+import { MailboxEmailLinksClickerEmail } from 'src/types/db/MailboxEmailLinksClickerEmail';
 /**
  * MailwizzTester - Orchestrates email delivery testing
  *
@@ -25,6 +26,7 @@ export class MailwizzTester {
   private mailwizzDeliveryServerDbConnector: MailwizzDeliveryServerDbConnector;
   private mailwizzDeliveryServersTestsDbConnector: MailwizzDeliveryServersTestsDbConnector;
   private mailwizzDeliveryServerToCustomerGroupDbConnector: MailwizzDeliveryServerToCustomerGroupDbConnector;
+  private mailboxEmailLinksClickerEmailsDbConnector: MailboxEmailLinksClickerEmailsDbConnector;
   /**
    * Initializes the MailwizzTester
    */
@@ -33,6 +35,7 @@ export class MailwizzTester {
     this.mailwizzDeliveryServerDbConnector = MailwizzDeliveryServerDbConnector.instance;
     this.mailwizzDeliveryServersTestsDbConnector = MailwizzDeliveryServersTestsDbConnector.instance;
     this.mailwizzDeliveryServerToCustomerGroupDbConnector = MailwizzDeliveryServerToCustomerGroupDbConnector.instance;
+    this.mailboxEmailLinksClickerEmailsDbConnector = MailboxEmailLinksClickerEmailsDbConnector.instance;
   }
 
 
@@ -55,19 +58,20 @@ export class MailwizzTester {
       // Step 2: Create a campaign
       const campaignData = await new CampaignCreator().run(mailwizzDeliveryServer!);
 
-      // Step 3: Retrieve the email
-      const emailResult = await new EmailRetriever().retrieveEmailWithRetries(
-        campaignData.campaignSubjectUuid
-      );
 
-      // Step 4: Simulate interactions with the email
-      await new EmailInteractor().startEmailInteractions(emailResult);
+      // Step 3: Retrieve the email
+      const email = await this.getEmailWithRetries(campaignData.campaignSubjectUuid);
+
+      if (!email) {
+        this.logger.error(`Email not found for subject uuid: ${campaignData.campaignSubjectUuid}`);
+        throw new Error(`Email not found for subject uuid: ${campaignData.campaignSubjectUuid}`);
+      }
 
       // Step 5: Validate that interactions were recorded in the database
       await new EmailInteractionValidator().validateInteractionRecords(campaignData.campaignId);
 
       // Step 6: Check email headers for proper configuration
-      await new EmailHeaderTester().testEmailHeaders(emailResult, mailwizzDeliveryServer!);
+      await new EmailHeaderTester().testEmailHeaders(email, mailwizzDeliveryServer!);
 
       // Step 7: Create a record for the successful delivery server test
       await this.mailwizzDeliveryServersTestsDbConnector.create(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.SUCCESSFUL);
@@ -105,5 +109,29 @@ export class MailwizzTester {
       throw new Error(`Delivery server with ID ${mailwizzDeliveryServerId} not found`);
     }
     return deliveryServer;
+  }
+
+  private async getEmailWithRetries(subjectUuid: string): Promise<MailboxEmailLinksClickerEmail> {
+    const maxRetries = 10;
+    const retryDelay = 60000; // 1 minute
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const email = await this.mailboxEmailLinksClickerEmailsDbConnector.getEmailBySubjectUuid(subjectUuid);
+        if (!email) {
+          throw new Error(`Email not found for subject uuid: ${subjectUuid}`);
+        }
+        return email;
+      } catch (error) {
+        if (attempt < maxRetries - 1) {
+          this.logger.warn(`Email not found for subject uuid: ${subjectUuid}, retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        } else {
+          this.logger.error(`Email not found for subject uuid: ${subjectUuid}, after ${maxRetries} attempts`);
+          throw error;
+        }
+      }
+    }
+    throw new Error(`Email not found for subject uuid: ${subjectUuid}, after ${maxRetries} attempts`);
   }
 }

@@ -1,4 +1,5 @@
 import { MailwizzDeliveryServer } from '../types/db/mailwizz/MailwizzDeliveryServer';
+import { MailboxEmailLinksClickerEmail } from '../types/db/MailboxEmailLinksClickerEmail';
 import { Logger } from '../utils/Logger';
 import { ParsedEmail } from './EmailRetriever';
 
@@ -39,7 +40,7 @@ export class EmailHeaderTester {
    * @returns The header test result if successful
    */
     public async testEmailHeaders(
-        email: ParsedEmail,
+        email: MailboxEmailLinksClickerEmail,
         mailwizzDeliveryServer: MailwizzDeliveryServer
     ): Promise<void> {
         this.logger.info('Starting email header validation');
@@ -116,10 +117,11 @@ export class EmailHeaderTester {
      * @param expectedEmail The expected email address
      * @returns Result of the check with success status and value/error
      */
-    private checkSenderHeader(email: ParsedEmail, expectedEmail: string): { success: boolean; value?: string; error?: string } {
+    private checkSenderHeader(email: MailboxEmailLinksClickerEmail, expectedEmail: string): { success: boolean; value?: string; error?: string } {
 
+        const emailHeaders = JSON.parse(email.email_headers);
         // Get sender from headers
-        const senderHeader = email.headers['sender'] || email.headers['Sender'];
+        const senderHeader = emailHeaders['sender'] || emailHeaders['Sender'];
 
         if (!senderHeader) {
             this.logger.warn('Sender header is missing');
@@ -159,10 +161,12 @@ export class EmailHeaderTester {
      * @param expectedEmail The expected email address
      * @returns Result of the check with success status and value/error
      */
-    private checkFromHeader(email: ParsedEmail, expectedName: string, expectedEmail: string): { success: boolean; value?: string; error?: string } {
+    private checkFromHeader(email: MailboxEmailLinksClickerEmail, expectedName: string, expectedEmail: string): { success: boolean; value?: string; error?: string } {
+
+        const emailHeaders = JSON.parse(email.email_headers);
 
         // Get from value (handle both direct field and headers)
-        const fromValue = email.from || email.headers['from'] || email.headers['From'];
+        const fromValue = email.email_from || emailHeaders['from'] || emailHeaders['From'];
 
         if (!fromValue) {
             this.logger.warn('From header is missing');
@@ -228,13 +232,15 @@ export class EmailHeaderTester {
      * @param expectedEmail The expected email address
      * @returns Result of the check with success status and value/error
      */
-    private checkReplyToHeader(email: ParsedEmail, expectedName: string, expectedEmail: string): { success: boolean; value?: string; error?: string } {
+    private checkReplyToHeader(email: MailboxEmailLinksClickerEmail, expectedName: string, expectedEmail: string): { success: boolean; value?: string; error?: string } {
+
+        const emailHeaders = JSON.parse(email.email_headers);
 
         // Check common variations of the Reply-To header
-        const replyToHeader = email.headers['reply-to'] ||
-            email.headers['Reply-To'] ||
-            email.headers['replyto'] ||
-            email.headers['ReplyTo'];
+        const replyToHeader = emailHeaders['reply-to'] ||
+            emailHeaders['Reply-To'] ||
+            emailHeaders['replyto'] ||
+            emailHeaders['ReplyTo'];
 
         if (!replyToHeader) {
             this.logger.warn('Reply-To header is missing');
@@ -300,7 +306,7 @@ export class EmailHeaderTester {
      * @param domainName The domain name to use for validation
      * @returns The result of the header checks
      */
-    public validateEmailHeaders(email: ParsedEmail, mailwizzDeliveryServer: MailwizzDeliveryServer): EmailHeaderTestResult {
+    public validateEmailHeaders(email: MailboxEmailLinksClickerEmail, mailwizzDeliveryServer: MailwizzDeliveryServer): EmailHeaderTestResult {
         this.logger.info('Starting email header validation');
 
         const expectedEmail = mailwizzDeliveryServer.from_email;
