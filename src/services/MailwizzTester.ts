@@ -112,7 +112,7 @@ export class MailwizzTester {
   }
 
   private async getEmailWithRetries(subjectUuid: string): Promise<MailboxEmailLinksClickerEmail> {
-    const maxRetries = 10;
+    const maxRetries = 20;
     const retryDelay = 60000; // 1 minute
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
