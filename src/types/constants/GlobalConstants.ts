@@ -1,3 +1,4 @@
+export const PRIMARY_SUBDOMAIN = 'news';
 export const TRACKING_SUBDOMAIN = 't';
 export const DEFAULT_MAIL_PASSWORD = 'RpKU7DfmrdkKXRsgbIe0U2wp';
 export const DEFAULT_MAIL_PASSWORD_MAILWIZZ_ENCRYPTED = 'Y46QmScuzEIa8cPlXn6t5oec/InPsJCvudXNHxfEK78=';
