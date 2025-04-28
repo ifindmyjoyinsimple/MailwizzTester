@@ -12,7 +12,7 @@ import { MailwizzDeliveryServersTestsStatus } from '../types/enums/MailwizzDeliv
 import { MailwizzDeliveryServerToCustomerGroupDbConnector } from '../data/mailwizz/MailwizzDeliveryServerToCustomerGroupDbConnector';
 import { MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID } from '../types/constants/GlobalConstants';
 import { MailboxEmailLinksClickerEmailsDbConnector } from '../data/MailboxEmailLinksClickerEmailsDbConnector';
-import { MailboxEmailLinksClickerEmail } from 'src/types/db/MailboxEmailLinksClickerEmail';
+import { MailboxEmailLinksClickerEmail } from '../types/db/MailboxEmailLinksClickerEmail';
 /**
  * MailwizzTester - Orchestrates email delivery testing
  *
