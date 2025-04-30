@@ -28,7 +28,7 @@ export class EmailInteractionValidator {
     private mailwizzInteractionStatsDbConnector: MailwizzInteractionStatsDbConnector;
 
     // Default retry configuration for bounce validation
-    private static readonly DEFAULT_BOUNCE_MAX_ATTEMPTS = 10;
+    private static readonly DEFAULT_BOUNCE_MAX_ATTEMPTS = 20;
     private static readonly DEFAULT_BOUNCE_RETRY_DELAY_MS = 60000; // 1 minute
 
     /**

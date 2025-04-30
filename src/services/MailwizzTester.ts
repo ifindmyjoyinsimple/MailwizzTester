@@ -76,12 +76,13 @@ export class MailwizzTester {
       // Step 7: Create a record for the successful delivery server test
       await this.mailwizzDeliveryServersTestsDbConnector.create(mailwizzDeliveryServerId, MailwizzDeliveryServersTestsStatus.SUCCESSFUL);
 
-      // Step 8: Add delivery server to the default customer group
-      this.logger.info(`Attempting to add server ${mailwizzDeliveryServerId} to group ${MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID}`);
-      await this.mailwizzDeliveryServerToCustomerGroupDbConnector.addDeliveryServerToCustomerGroup(
-        mailwizzDeliveryServerId,
-        MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID
-      );
+      // Disabling this step for now as we don't want to add the server to the default customer group (as per conversation with DS)
+      // // Step 8: Add delivery server to the default customer group
+      // this.logger.info(`Attempting to add server ${mailwizzDeliveryServerId} to group ${MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID}`);
+      // await this.mailwizzDeliveryServerToCustomerGroupDbConnector.addDeliveryServerToCustomerGroup(
+      //   mailwizzDeliveryServerId,
+      //   MAILWIZZ_DEFAULT_CUSTOMER_GROUP_ID
+      // );
 
       this.logger.info(`Test for Delivery Server ${mailwizzDeliveryServer!.server_id} completed successfully`);
     } catch (error) {
