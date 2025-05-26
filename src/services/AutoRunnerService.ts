@@ -33,15 +33,26 @@ export class AutoRunnerService {
         this.logger.info('Starting auto-run test cycle...');
 
         // Time calculation is now handled within the SQL query
-        let serversToTest: MailwizzDeliveryServer[];
+        let serversUpdatedInLastHour: MailwizzDeliveryServer[] = [];
+        let serversNotTestedInLast24Hours: MailwizzDeliveryServer[] = [];
         try {
             // Fetch active servers updated in the last hour (DB handles time calculation)
-            serversToTest = await this.deliveryServerDb.getActiveServersUpdatedInLastHour();
-            this.logger.info(`Found ${serversToTest.length} active servers updated within the last hour to test.`);
+            serversUpdatedInLastHour = await this.deliveryServerDb.getActiveServersUpdatedInLastHour();
+            this.logger.info(`Found ${serversUpdatedInLastHour.length} active servers updated within the last hour to test.`);
         } catch (error) {
-            this.logger.error('Failed to fetch servers needing tests:', error);
-            return; // Cannot proceed without the server list
+            this.logger.error('Failed to fetch servers updated in the last hour needing tests:', error);
         }
+
+        try {
+            // GET active servers that have not been tested in the last 24 hours
+            serversNotTestedInLast24Hours = await this.deliveryServerDb.getActiveServersNotTestedInLast24Hours();
+            this.logger.info(`Found ${serversNotTestedInLast24Hours.length} active servers not tested in the last 24 hours to test.`);
+        } catch (error) {
+            this.logger.error('Failed to fetch servers not tested in the last 24 hours needing tests:', error);
+        }
+
+        // Combine the two arrays
+        const serversToTest = [...serversUpdatedInLastHour, ...serversNotTestedInLast24Hours];
 
         if (serversToTest.length === 0) {
             this.logger.info('No servers require testing in this cycle.');

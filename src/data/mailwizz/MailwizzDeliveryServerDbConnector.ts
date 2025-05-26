@@ -50,6 +50,26 @@ export class MailwizzDeliveryServerDbConnector {
     return result.rows as MailwizzDeliveryServer[];
   }
 
+  /**
+   * Retrieves active delivery servers that have NOT been tested in the last 24 hours.
+   * Uses a NOT EXISTS subquery to check for absence of recent tests.
+   * @returns An array of MailwizzDeliveryServer objects.
+   */
+  public async getActiveServersNotTestedInLast24Hours(): Promise<MailwizzDeliveryServer[]> {
+    const query = `
+      SELECT * FROM mailwizz.mw_delivery_server ds
+      WHERE ds.status = 'active'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM infra_controller.mailwizz_delivery_servers_tests t
+          WHERE t.delivery_server_id = ds.server_id
+            AND t.test_insert_date > (NOW() - INTERVAL 24 HOUR)
+        )
+    `;
+    const result = await this.dbConnector.query<MailwizzDeliveryServer>(query);
+    return result.rows as MailwizzDeliveryServer[];
+  }
+
   public async updateDeliveryServerStatus(serverId: number, status: string): Promise<void> {
     const query = `
       UPDATE mailwizz.mw_delivery_server
