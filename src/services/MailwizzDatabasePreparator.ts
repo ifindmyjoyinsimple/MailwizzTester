@@ -33,8 +33,10 @@ export class MailwizzDatabasePreparator {
     await this.listSubscriberDbConnector.updateTestEmailsSubscriptionStatusToConfirmed();
 
     // Set the delivery server quota to unlimited
-    await this.deliveryServerDbConnector.setDeliveryServerUnlimitedQuotaById(
-      mailwizzDeliveryServer.server_id
-    );
+
+    // Stop here for now. We don't want to set the quota to unlimited.
+    // await this.deliveryServerDbConnector.setDeliveryServerUnlimitedQuotaById(
+    //   mailwizzDeliveryServer.server_id
+    // );
   }
 }
