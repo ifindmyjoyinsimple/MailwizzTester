@@ -93,8 +93,9 @@ export class MailwizzTester {
 
       // Update the delivery server status to inactive
       try {
-        this.logger.warn(`Setting status to inactive for Delivery Server ${mailwizzDeliveryServerId} due to test failure.`);
-        await this.mailwizzDeliveryServerDbConnector.updateDeliveryServerStatus(mailwizzDeliveryServerId, 'inactive');
+        this.logger.warn(`Skipping status update to inactive (for now) for Delivery Server ${mailwizzDeliveryServerId}.`);
+        //this.logger.warn(`Setting status to inactive for Delivery Server ${mailwizzDeliveryServerId} due to test failure.`);
+        //await this.mailwizzDeliveryServerDbConnector.updateDeliveryServerStatus(mailwizzDeliveryServerId, 'inactive');
       } catch (updateError) {
         this.logger.error(`Failed to update status for Delivery Server ${mailwizzDeliveryServerId}:`, updateError);
         // Log the update error, but still throw the original test error
